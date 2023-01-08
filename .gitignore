@@ -1,52 +1,90 @@
-# Prerequisites
-*.d
+#include <stdio.h>
+#include <stdlib.h>
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+struct node {
+	int data;
+	struct node *left;
+	struct node *right;
+};
 
-# Linker output
-*.ilk
-*.map
-*.exp
+struct node *ekle (struct node *agac,int veri) {
+	if (agac==NULL) {
+		struct node *new=(struct node*)malloc(sizeof(struct node));
+		new->data=veri;
+		new->left=NULL;
+		new->right=NULL;
+		return new;
+	}
+	if (agac->data<veri) {
+		agac->right=ekle(agac->right,veri);
+		return agac;
+	}
+	else {
+		agac->left=ekle(agac->left,veri);
+		return agac;
+	}
+}
 
-# Precompiled Headers
-*.gch
-*.pch
+int max(struct node *agac) {
+	while (agac->right!=NULL) {
+		agac=agac->right;
+	}
+	return agac->data;
+}
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+int min (struct node *agac) {
+	while (agac->left!=NULL) {
+		agac=agac->left;
+	}
+	return agac->data;
+}
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+void dolas (struct node *agac) {
+	if (agac==NULL) {
+		return;
+	}
+	dolas(agac->left);
+	printf("%d ",agac->data);
+	dolas(agac->right);
+}
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+struct node *sil(struct node *agac,int veri) {
+	if (agac==NULL) {
+		return NULL;
+	}
+	if (agac->data==veri) {
+		if (agac->left==NULL && agac->right==NULL) {
+			return NULL;
+		}
+		if (agac->right!=NULL) {
+			agac->data=min(agac->right);
+			agac->right=sil(agac->right,min(agac->right));
+			return agac;
+		}
+		agac->data=max(agac->left);
+		agac->left=sil(agac->left,max(agac->left));
+		return agac;
+	}
+	if (agac->data<veri) {
+		agac->right=sil(agac->right,veri);
+		return agac;
+	}
+	agac->left=sil(agac->left,veri);
+	return agac;
+	
+}
+int main () {
+	struct node *x=NULL;
+	x=ekle(x,12);
+	x=ekle(x,17);
+	x=ekle(x,20);
+	x=ekle(x,16);
+	x=ekle(x,15);
+	x=ekle(x,99);
+	x=ekle(x,21);
+	dolas(x);
+	printf("\nMax: %d\n",max(x));
+	printf("Min: %d\n",min(x));
+	x=sil(x,12);
+	dolas(x);
+}
